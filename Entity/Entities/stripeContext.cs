@@ -48,9 +48,12 @@ namespace Entity.Entities
 
             modelBuilder.Entity<Transaction>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("Transaction");
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("id");
 
                 entity.Property(e => e.Amount).HasColumnName("amount");
 
@@ -58,14 +61,22 @@ namespace Entity.Entities
                     .HasColumnType("date")
                     .HasColumnName("created_date");
 
-                entity.Property(e => e.Id)
-                    .IsRequired()
+                entity.Property(e => e.Currency)
+                    .HasMaxLength(10)
+                    .HasColumnName("currency")
+                    .IsFixedLength(true);
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(50)
+                    .HasColumnName("email");
+
+                entity.Property(e => e.Status)
                     .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("id");
+                    .HasColumnName("status");
 
                 entity.Property(e => e.TransactionId)
-                    .HasMaxLength(50)
+                    .HasMaxLength(200)
                     .IsUnicode(false)
                     .HasColumnName("transaction_id");
 
