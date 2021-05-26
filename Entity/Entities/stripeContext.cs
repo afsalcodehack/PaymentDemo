@@ -18,6 +18,7 @@ namespace Entity.Entities
         }
 
         public virtual DbSet<Sample> Samples { get; set; }
+        public virtual DbSet<Transaction> Transactions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,6 +44,35 @@ namespace Entity.Entities
                 entity.Property(e => e.Name)
                     .HasMaxLength(10)
                     .IsFixedLength(true);
+            });
+
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("Transaction");
+
+                entity.Property(e => e.Amount).HasColumnName("amount");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("date")
+                    .HasColumnName("created_date");
+
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.TransactionId)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("transaction_id");
+
+                entity.Property(e => e.Type)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("type");
             });
 
             OnModelCreatingPartial(modelBuilder);

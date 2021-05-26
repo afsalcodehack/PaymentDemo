@@ -7,8 +7,6 @@ using Repositories.IRepositories;
 using Entity.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-//using server.Helpers;
-//using Authorize = server.Helpers.AuthorizeAttribute;
 
 namespace server.Controllers
 {

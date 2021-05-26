@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -9,6 +10,8 @@ using Stripe.Checkout;
 
 namespace server.Controllers
 {
+    //[Route("[controller]")]
+    //[ApiController]
     public class PaymentsController : Controller
     {
         public readonly IOptions<StripeOptions> options;
@@ -36,14 +39,19 @@ namespace server.Controllers
             };
         }
 
+
+        //[Authorize]
         [HttpGet("checkout-session")]
         public async Task<Session> GetCheckoutSession(string sessionId)
         {
             var service = new SessionService(this.client);
             var session = await service.GetAsync(sessionId);
+            
+            //update db 
             return session;
         }
 
+        //[Authorize]
         [HttpPost("create-checkout-session")]
         public async Task<CreateCheckoutSessionResponse> CreateCheckoutSession()
         {
@@ -78,6 +86,7 @@ namespace server.Controllers
 
             var service = new SessionService(this.client);
             var session = await service.CreateAsync(options);
+            // to db session.Id
 
             return new CreateCheckoutSessionResponse
             {
