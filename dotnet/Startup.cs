@@ -22,13 +22,12 @@ namespace server
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
+        private const string publishableKey = "PublishableKey";
+        private const string secretKey = "SecretKey";
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -58,8 +57,10 @@ namespace server
 
             services.Configure<Entity.Configuration.StripeOptions>(options =>
             {
-                options.PublishableKey = "pk_test_51Iv3WDH4DR7BOnAWOzy6nvLnX1UiDGmY5EADgtZyDSZiQrtfVZoyG204SLoi9hg7hVTupzad055ssSHNeEOGgLcV002zk9HVRw";
-                options.SecretKey = "sk_test_51Iv3WDH4DR7BOnAWtWXeiWcg3Ztdl3xnPqLAkvQY9rg2orkMVwxEgPYSh2KKfI2WH5UORaVDbwlcJnZdPAwxkHDS00c06HuETL";
+                options.PublishableKey = Configuration.GetValue<string>(publishableKey);
+
+
+                options.SecretKey = Configuration.GetValue<string>(secretKey);
                // options.WebhookSecret = "whsec_U75LXStIJUFKzREIaF4pBJPrwY0ltUeV";
                 options.Price = "price_1IvESmH4DR7BOnAWhAVdBjya";
                 options.PaymentMethodTypes = "card".Split(",").ToList();
