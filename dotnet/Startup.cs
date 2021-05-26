@@ -78,7 +78,9 @@ namespace server
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
             app.UseFileServer();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseCors(x => x
                 .AllowAnyOrigin()
