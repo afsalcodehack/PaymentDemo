@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Repositories.IRepositories;
 using Entity.Model;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 //using server.Helpers;
 //using Authorize = server.Helpers.AuthorizeAttribute;
 
@@ -37,6 +38,7 @@ namespace server.Controllers
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
+            var userID = this.User.Claims.First(x => x.Type == ClaimTypes.Role);
             return Ok(users);
         }
     }
