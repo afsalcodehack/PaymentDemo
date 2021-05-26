@@ -22,9 +22,9 @@ namespace server
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>()
-                    .UseUrls("http://localhost:4242");
-                    webBuilder.UseWebRoot("view");
+                    webBuilder.UseStartup<Startup>();
+                   // .UseUrls("http://0.0.0.0:4242");
+                   webBuilder.UseWebRoot("UI");
                 });
         }   
     }

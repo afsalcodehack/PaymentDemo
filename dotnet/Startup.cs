@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Entity.Entities;
-using Entity.Helper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,7 +14,7 @@ using Newtonsoft.Json.Serialization;
 using Repositories;
 using Repositories.IRepositories;
 using server.Helpers;
-using server.Repository;
+using server.Service;
 using Stripe;
 
 namespace server
@@ -38,17 +37,9 @@ namespace server
 
             services.InjectJwtAuthService(Configuration);
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IStripePaymentRepository, StripePaymentRepository>();
-
-            services.AddScoped<IExternalPaymentGW, ExternalPaymentGW>();
-            services.AddScoped<IPaymentGWRepository, PaymentGWRepo>();
-
-            var price = "price_1IvESmH4DR7BOnAWhAVdBjya";
-            if (price == "price_12345" || price == "" || price == null) {
-              Console.WriteLine("You must set a Price ID in .env. Please see the README.");
-              Environment.Exit(0);
-            }
-
+            services.AddScoped<IStripePaymentsRepository, StripePaymentsRepository>();
+            services.AddScoped<IAuthorizeCapturePaymentGateway, AuthorizeCapturePaymentGateway>();
+             
             StripeConfiguration.AppInfo = new AppInfo
             {
                 Name = "stripe-samples/accept-a-payment/prebuilt-checkout-page",
@@ -56,11 +47,12 @@ namespace server
                 Version = "0.0.1",
             };
 
+            StripeConfiguration.ApiKey = "sk_test_51Iv3WDH4DR7BOnAWtWXeiWcg3Ztdl3xnPqLAkvQY9rg2orkMVwxEgPYSh2KKfI2WH5UORaVDbwlcJnZdPAwxkHDS00c06HuETL";
+
             services.Configure<Entity.Configuration.StripeOptions>(options =>
             {
                 options.PublishableKey = "pk_test_51Iv3WDH4DR7BOnAWOzy6nvLnX1UiDGmY5EADgtZyDSZiQrtfVZoyG204SLoi9hg7hVTupzad055ssSHNeEOGgLcV002zk9HVRw";
                 options.SecretKey = "sk_test_51Iv3WDH4DR7BOnAWtWXeiWcg3Ztdl3xnPqLAkvQY9rg2orkMVwxEgPYSh2KKfI2WH5UORaVDbwlcJnZdPAwxkHDS00c06HuETL";
-               // options.WebhookSecret = "whsec_U75LXStIJUFKzREIaF4pBJPrwY0ltUeV";
                 options.Price = "price_1IvESmH4DR7BOnAWhAVdBjya";
                 options.PaymentMethodTypes = "card".Split(",").ToList();
                 options.Domain = "http://localhost:4242";
@@ -85,30 +77,24 @@ namespace server
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            //app.UseHttpsRedirection();
             app.UseFileServer();
             app.UseRouting();
-            // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-            // custom jwt auth middleware
-            //app.UseMiddleware<JwtMiddleware>();
-            //app.UseAuthorization();
             app.UseAuthentication();
 
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
+       
         }
     }
 }
