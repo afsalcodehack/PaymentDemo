@@ -21,11 +21,6 @@ namespace server.Controllers
             _userService = userService;
         }
 
-        [HttpGet("test")]
-        public string get()
-        {
-            return "Success";
-        }
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateRequest model)
         {
