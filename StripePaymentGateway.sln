@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StripePaymentGateway", "StripePaymentGateway\StripePaymentGateway.csproj", "{816801DE-3449-454A-852B-8FA61BD6C150}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entity", "Entity\Entity.csproj", "{609D1121-BB84-49E4-BE8A-9F04594B40C4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Result", "Result\Result.csproj", "{6D3406C0-0848-44FE-8E58-536DC697FE75}"
@@ -21,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{816801DE-3449-454A-852B-8FA61BD6C150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{816801DE-3449-454A-852B-8FA61BD6C150}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{816801DE-3449-454A-852B-8FA61BD6C150}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{816801DE-3449-454A-852B-8FA61BD6C150}.Release|Any CPU.Build.0 = Release|Any CPU
 		{609D1121-BB84-49E4-BE8A-9F04594B40C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{609D1121-BB84-49E4-BE8A-9F04594B40C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{609D1121-BB84-49E4-BE8A-9F04594B40C4}.Release|Any CPU.ActiveCfg = Release|Any CPU

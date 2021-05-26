@@ -11,8 +11,8 @@ using Stripe.Checkout;
 
 namespace server.Controllers
 {
-    //[Route("[controller]")]
-    //[ApiController]
+   // [Route("[controller]")]
+    [ApiController]
     public class PaymentsController : Controller
     {
         private readonly IStripePaymentRepository _stripePaymentRepository;
@@ -22,7 +22,6 @@ namespace server.Controllers
             _stripePaymentRepository = stripePaymentRepository;
         }
 
-        //[Authorize]
         [HttpGet("config")]
         public Task<Entity.Configuration.ConfigResponse> GetConfig()
         {
@@ -35,7 +34,7 @@ namespace server.Controllers
             return _stripePaymentRepository.GetCheckoutSession(sessionId);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("create-checkout-session")]
         public Task<Entity.Configuration.CreateCheckoutSessionResponse> CreateCheckoutSession()
         {
