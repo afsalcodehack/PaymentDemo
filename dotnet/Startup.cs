@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Entity.Helper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using Repositories;
+using Repositories.IRepositories;
+using server.Helpers;
 using Stripe;
 
 namespace server
@@ -25,8 +29,11 @@ namespace server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //var price = Environment.GetEnvironmentVariable("PRICE");
-             var price = "price_1IvESmH4DR7BOnAWhAVdBjya";
+            //services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.InjectJwtAuthService(Configuration);
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            var price = "price_1IvESmH4DR7BOnAWhAVdBjya";
             if (price == "price_12345" || price == "" || price == null) {
               Console.WriteLine("You must set a Price ID in .env. Please see the README.");
               Environment.Exit(0);
@@ -38,16 +45,6 @@ namespace server
                 Url = "https://github.com/stripe-samples",
                 Version = "0.0.1",
             };
-
-            //services.Configure<StripeOptions>(options =>
-            //{
-            //    options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");
-            //    options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
-            //    options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET");
-            //    options.Price = Environment.GetEnvironmentVariable("PRICE");
-            //    options.PaymentMethodTypes = Environment.GetEnvironmentVariable("PAYMENT_METHOD_TYPES").Split(",").ToList();
-            //    options.Domain = Environment.GetEnvironmentVariable("DOMAIN");
-            //});
 
             services.Configure<StripeOptions>(options =>
             {
@@ -84,6 +81,17 @@ namespace server
             //app.UseHttpsRedirection();
             app.UseFileServer();
             app.UseRouting();
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
+            // custom jwt auth middleware
+            //app.UseMiddleware<JwtMiddleware>();
+            //app.UseAuthorization();
+            app.UseAuthentication();
+
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
