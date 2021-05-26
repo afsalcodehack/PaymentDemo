@@ -35,7 +35,6 @@ namespace StripePaymentGateway
                             ServiceLifetime.Scoped);
 
             services.AddControllers();
-            services.AddScoped<ISampleRepository, SampleRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StripePaymentGateway", Version = "v1" });

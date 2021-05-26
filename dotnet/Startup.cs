@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Entity.Entities;
 using Entity.Helper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using Repositories;
 using Repositories.IRepositories;
 using server.Helpers;
+using server.Repository;
 using Stripe;
 
 namespace server
@@ -29,9 +32,16 @@ namespace server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.AddDbContext<stripeContext>(options =>
+                           options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]),
+                           ServiceLifetime.Scoped);
+
             services.InjectJwtAuthService(Configuration);
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IStripePaymentRepository, StripePaymentRepository>();
+
+            services.AddScoped<IExternalPaymentGW, ExternalPaymentGW>();
+            services.AddScoped<IPaymentGWRepository, PaymentGWRepo>();
 
             var price = "price_1IvESmH4DR7BOnAWhAVdBjya";
             if (price == "price_12345" || price == "" || price == null) {
@@ -46,7 +56,7 @@ namespace server
                 Version = "0.0.1",
             };
 
-            services.Configure<StripeOptions>(options =>
+            services.Configure<Entity.Configuration.StripeOptions>(options =>
             {
                 options.PublishableKey = "pk_test_51Iv3WDH4DR7BOnAWOzy6nvLnX1UiDGmY5EADgtZyDSZiQrtfVZoyG204SLoi9hg7hVTupzad055ssSHNeEOGgLcV002zk9HVRw";
                 options.SecretKey = "sk_test_51Iv3WDH4DR7BOnAWtWXeiWcg3Ztdl3xnPqLAkvQY9rg2orkMVwxEgPYSh2KKfI2WH5UORaVDbwlcJnZdPAwxkHDS00c06HuETL";
