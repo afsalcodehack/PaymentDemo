@@ -2,31 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using server.Repository;
 
 namespace server.Service
 {
     public interface IExternalPaymentGW
     {
-        void Authorize();
+        string Authorize();
 
-        void Capture();
+        string Capture();
 
     }
 
     public class StripePaymentGW : IExternalPaymentGW
     {
+        private readonly IPaymentGWRepository _paymentGWRepository;
 
-        public StripePaymentGW()
+        public StripePaymentGW(IPaymentGWRepository paymentGWRepository)
         {
-
+            _paymentGWRepository = paymentGWRepository;
         }
 
-        void IExternalPaymentGW.Authorize()
+        public string Authorize()
         {
             throw new NotImplementedException();
         }
 
-        void IExternalPaymentGW.Capture()
+        public string Capture()
         {
             throw new NotImplementedException();
         }
