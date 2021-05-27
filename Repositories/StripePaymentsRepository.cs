@@ -1,4 +1,5 @@
-﻿using Entity.Entities;
+﻿using Ardalis.GuardClauses;
+using Entity.Entities;
 using Repositories.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace Repositories
     public class StripePaymentsRepository : IStripePaymentsRepository
     {
         private stripeContext stripeContext;
+        private static readonly string status = "Completed";
         public StripePaymentsRepository(stripeContext stripeContext)
         {
             this.stripeContext = stripeContext;
@@ -24,17 +26,17 @@ namespace Repositories
         public void UpdateTransaction(Transaction transaction)
         {
             var updateTransaction = stripeContext.Transactions.Where(x => x.TransactionId == transaction.TransactionId).FirstOrDefault();
-            if (updateTransaction != null)
-            {
-                updateTransaction.Email = transaction.Email;
-                updateTransaction.Currency = transaction.Currency;
-                updateTransaction.Amount = transaction.Amount;
-                updateTransaction.CreatedDate = transaction.CreatedDate;
-                updateTransaction.Type = transaction.Type;
-                updateTransaction.Status = "Completed";
-                stripeContext.Transactions.Update(updateTransaction);
-                stripeContext.SaveChanges();
-            }
+            Guard.Against.Null(updateTransaction, nameof(updateTransaction));
+
+            updateTransaction.Email = transaction.Email;
+            updateTransaction.Currency = transaction.Currency;
+            updateTransaction.Amount = transaction.Amount;
+            updateTransaction.CreatedDate = transaction.CreatedDate;
+            updateTransaction.Type = transaction.Type;
+            updateTransaction.Status = status;
+            stripeContext.Transactions.Update(updateTransaction);
+            stripeContext.SaveChanges();
+
         }
     }
 }

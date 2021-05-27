@@ -5,32 +5,34 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using server.Models;
 using server.Service;
-using Stripe;
 using System;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace server.Controllers
 {
+
+    /// <summary>
+    /// This is the main controller which contains the Authorize and Capture method
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PaymentGatewayController : BaseController
     {
         private readonly IAuthorizeCapturePaymentGateway authorizeCapturePaymentGateway;
-        private readonly IStripeClient client;
+
         public readonly IOptions<Entity.Configuration.StripeOptions> options;
 
-        public PaymentGatewayController(IOptions<Entity.Configuration.StripeOptions> options, IAuthorizeCapturePaymentGateway authorizeCapturePaymentGateway,ILogger<PaymentGatewayController> logger): base(logger)
+        public PaymentGatewayController(IOptions<Entity.Configuration.StripeOptions> options, IAuthorizeCapturePaymentGateway authorizeCapturePaymentGateway, ILogger<PaymentGatewayController> logger) : base(logger)
         {
             this.options = options;
             this.authorizeCapturePaymentGateway = authorizeCapturePaymentGateway;
-            client = new StripeClient(this.options.Value.SecretKey);
         }
 
         [HttpGet("getconfig")]
         public Config GetConfig()
         {
-            
             return new Config
             {
                 PublishableKey = options.Value.PublishableKey,
@@ -41,18 +43,18 @@ namespace server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public AuthorizeCaptureResponse Authorize(PaymentIntentCreateRequest request)
+        public async Task<ActionResult<AuthorizeCaptureResponse>> Authorize(PaymentIntentCreateRequest request)
         {
             Guard.Against.Null(request, nameof(request));
-
+            Logger.LogInformation("Authorize method");
             try
             {
-                return authorizeCapturePaymentGateway.Authorize(request);
+                return await authorizeCapturePaymentGateway.Authorize(request);
             }
             catch (Exception exception)
             {
-                Logger.LogInformation(exception.Message);
-                return null;
+                Logger.LogError(exception.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -63,13 +65,14 @@ namespace server.Controllers
         public AuthorizeCaptureResponse Capture(PaymentIntentCreateRequest request)
         {
             Guard.Against.Null(request, nameof(request));
+            Logger.LogInformation("Capture method");
             try
             {
                 return authorizeCapturePaymentGateway.Capture(request);
             }
             catch (Exception exception)
             {
-                Logger.LogInformation(exception.Message);
+                Logger.LogError(exception.Message);
                 return null;
             }
 

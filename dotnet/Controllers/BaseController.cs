@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace server.Controllers
 {
+
+    /// <summary>
+    /// This is the base controller
+    /// </summary>
     public abstract class BaseController : ControllerBase
     {
         /// <summary>

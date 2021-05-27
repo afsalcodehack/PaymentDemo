@@ -2,15 +2,17 @@
 using Repositories.IRepositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Stripe;
 using server.Models;
 using Ardalis.GuardClauses;
+using System.Threading.Tasks;
 
 namespace server.Service
 {
+
+    /// <summary>
+    ///  This is the service layer for the Authorize and Capture implementation 
+    /// </summary>
     public class AuthorizeCapturePaymentGateway : IAuthorizeCapturePaymentGateway
     {
         private readonly IStripePaymentsRepository stripePaymentsRepository;
@@ -18,6 +20,7 @@ namespace server.Service
         private const string status = "completed";
         private const string email = "aneezm12@gmail.com";
         private const string transactionStatus = "pending";
+        private const string manual = "manual";
 
         public AuthorizeCapturePaymentGateway(IStripePaymentsRepository stripePaymentsRepository)
         {
@@ -30,7 +33,7 @@ namespace server.Service
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public AuthorizeCaptureResponse Authorize(PaymentIntentCreateRequest request)
+        public async Task<AuthorizeCaptureResponse> Authorize(PaymentIntentCreateRequest request)
         {
             Guard.Against.Null(request, nameof(request));
 
@@ -42,29 +45,27 @@ namespace server.Service
                 {
                 "card",
                 },
-                CaptureMethod = "manual"
+                CaptureMethod = manual
             };
 
             var paymentIntents = new PaymentIntentService();
 
             var paymentIntent = paymentIntents.Create(options2);
-
-            Transaction transaction = new Transaction
+            await Task.Run(() =>
             {
-                Id = Convert.ToString(Guid.NewGuid()),
-                CreatedDate = DateTime.Now,
-                Currency = request.Currency,
-                Status = transactionStatus,
-                TransactionId = paymentIntent.Id,
-            };
-            //transaction.Id = Convert.ToString(Guid.NewGuid());
-            //transaction.CreatedDate = DateTime.Now;
-            //transaction.Currency = request.Currency;
-            //transaction.Status = transactionStatus;
-            //transaction.TransactionId = paymentIntent.Id;
-            stripePaymentsRepository.CreateTransaction(transaction);
+                Transaction transaction = new Transaction
+                {
+                    Id = Convert.ToString(Guid.NewGuid()),
+                    CreatedDate = DateTime.Now,
+                    Currency = request.Currency,
+                    Status = transactionStatus,
+                    TransactionId = paymentIntent.Id,
+                    Type= options2.PaymentMethodTypes[0]
+                };
+                stripePaymentsRepository.CreateTransaction(transaction);
+            });
 
-            return new AuthorizeCaptureResponse() { clientSecret = paymentIntent.ClientSecret };
+            return  new AuthorizeCaptureResponse() { clientSecret = paymentIntent.ClientSecret };
            
         }
 
@@ -90,7 +91,8 @@ namespace server.Service
                 Currency = paymentIntent.Currency,
                 Amount = request.Amount,
                 Status = status,
-                Email = email
+                Email = email,
+                CreatedDate=DateTime.Now
             };
             
             stripePaymentsRepository.UpdateTransaction(updateTransaction);

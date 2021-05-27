@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Entity.Helper;
+using Ardalis.GuardClauses;
 
 namespace Repositories
 { 
@@ -30,9 +31,8 @@ namespace Repositories
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
             var user = _users.SingleOrDefault(x => x.Username == model.Username && x.Password == model.Password);
-            
-            // return null if user not found
-            if (user == null) return null;
+
+            Guard.Against.Null(user, nameof(user));
 
             // authentication successful so generate jwt token
             var token = generateJwtToken(user);
