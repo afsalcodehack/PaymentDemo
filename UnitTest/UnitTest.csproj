@@ -20,6 +20,10 @@
   <ItemGroup>
     <Folder Include="Services\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\dotnet\server.csproj" />
+  </ItemGroup>
   
   
 
