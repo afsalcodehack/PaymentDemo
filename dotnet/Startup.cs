@@ -36,8 +36,8 @@ namespace server
 
             services.InjectJwtAuthService(Configuration);
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddTransient<IStripePaymentsRepository, StripePaymentsRepository>();
-            services.AddTransient<IAuthorizeCapturePaymentGateway, AuthorizeCapturePaymentGateway>();
+            services.AddScoped<IStripePaymentsRepository, StripePaymentsRepository>();
+            services.AddScoped<IAuthorizeCapturePaymentGateway, AuthorizeCapturePaymentGateway>();
              
             StripeConfiguration.AppInfo = new AppInfo
             {
