@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Repositories.IRepositories;
 using Entity.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +11,10 @@ using Microsoft.Extensions.Logging;
 
 namespace server.Controllers
 {
+
+    /// <summary>
+    /// This is the controller to generate the token for Auth
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     public class UsersController : BaseController
@@ -54,9 +56,16 @@ namespace server.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
+            try {
             var users = _userRepo.GetAll();
             var userID = this.User.Claims.First(x => x.Type == ClaimTypes.Role);
             return Ok(users);
+            }
+            catch (Exception exception)
+            {
+                Logger.LogInformation(exception.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }
