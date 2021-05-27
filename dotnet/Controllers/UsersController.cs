@@ -7,6 +7,7 @@ using Repositories.IRepositories;
 using Entity.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace server.Controllers
 {
@@ -14,19 +15,24 @@ namespace server.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserRepository _userService;
-        public UsersController(IUserRepository userService)
+        private IUserRepository _userRepo;
+        public UsersController(IUserRepository userRepo)
         {
-            _userService = userService;
+            _userRepo = userRepo;
         }
 
         [HttpPost("authenticate")]
-        public IActionResult Authenticate(AuthenticateRequest model)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public IActionResult Authenticate(AuthenticateRequest request)
         {
-            var response = _userService.Authenticate(model);
+            var response = _userRepo.Authenticate(request);
 
             if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+            {
+                return NoContent();
+            }
 
             return Ok(response);
         }
@@ -35,7 +41,7 @@ namespace server.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var users = _userService.GetAll();
+            var users = _userRepo.GetAll();
             var userID = this.User.Claims.First(x => x.Type == ClaimTypes.Role);
             return Ok(users);
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Ardalis.GuardClauses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using server.Models;
@@ -36,14 +37,24 @@ namespace server.Controllers
         }
 
         [HttpPost("authorize")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public AuthorizeCaptureResponse Authorize(PaymentIntentCreateRequest request)
         {
+            Guard.Against.Null(request, nameof(request));
             return authorizeCapturePaymentGateway.Authorize(request);
+
+
         }
 
         [HttpPost("capture")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public AuthorizeCaptureResponse Capture(PaymentIntentCreateRequest request)
         {
+            Guard.Against.Null(request, nameof(request));
             return authorizeCapturePaymentGateway.Capture(request);
         }
     }
