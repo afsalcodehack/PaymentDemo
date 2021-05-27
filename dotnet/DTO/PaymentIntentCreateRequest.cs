@@ -14,6 +14,6 @@ namespace server.Models
         public List<string> PaymentMethodTypes { get; set; }
         public string CaptureMethod { get; set; }
 
-        public string payment_id { get; set; }
+        public string Payment_id { get; set; }
     }
 }

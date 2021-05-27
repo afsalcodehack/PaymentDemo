@@ -27,6 +27,7 @@ namespace server
 
         private const string publishableKey = "PublishableKey";
         private const string secretKey = "SecretKey";
+        private const string apiKey = "APIKey";
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -46,12 +47,12 @@ namespace server
                 Version = "0.0.1",
             };
 
-            StripeConfiguration.ApiKey = "sk_test_51Iv3WDH4DR7BOnAWtWXeiWcg3Ztdl3xnPqLAkvQY9rg2orkMVwxEgPYSh2KKfI2WH5UORaVDbwlcJnZdPAwxkHDS00c06HuETL";
+            StripeConfiguration.ApiKey = Configuration.GetValue<string>(apiKey); 
 
             services.Configure<Entity.Configuration.StripeOptions>(options =>
             {
-                options.PublishableKey = "pk_test_51Iv3WDH4DR7BOnAWOzy6nvLnX1UiDGmY5EADgtZyDSZiQrtfVZoyG204SLoi9hg7hVTupzad055ssSHNeEOGgLcV002zk9HVRw";
-                options.SecretKey = "sk_test_51Iv3WDH4DR7BOnAWtWXeiWcg3Ztdl3xnPqLAkvQY9rg2orkMVwxEgPYSh2KKfI2WH5UORaVDbwlcJnZdPAwxkHDS00c06HuETL";
+                options.PublishableKey = Configuration.GetValue<string>(publishableKey);
+                options.SecretKey = Configuration.GetValue<string>(secretKey);
                 options.Price = "price_1IvESmH4DR7BOnAWhAVdBjya";
                 options.PaymentMethodTypes = "card".Split(",").ToList();
                 options.Domain = "http://localhost:4242";
